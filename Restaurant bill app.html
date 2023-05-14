@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<!-- Meta tag with additional viewport properties -->
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+
+  <!-- Meta tags for description and keywords -->
+
+  <meta name="description" content="product billing App | developed by: Akinbrand.io">
+
+  <meta name="keywords" content="HTML, css, javascript">
+
+  <!---email:abiodunmosesakinpelu@gmail.com--->
+
+  
+
+  <title>Restaurant Billing App</title>
+
+  <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+  <h1>Restaurant Billing App</h1>
+
+  <form>
+
+    <label for="customer-name">Customer Name:</label><br>
+
+    <input type="text" id="customer-name" placeholder="Enter customer name"><br>
+
+    <label for="table-number">Table Number:</label><br>
+
+    <input type="number" id="table-number" placeholder="Enter table number"><br>
+
+  </form>
+
+  <h2>Menu</h2>
+
+  <table id="menu">
+
+    <tr>
+
+      <th>Item</th>
+
+      <th>Price</th>
+
+      <th>Quantity</th>
+
+    </tr>
+
+    <tr>
+
+      <td>Burger</td>
+
+      <td>#1200</td>
+
+      <td><input type="number" value="0" min="0"></td>
+
+    </tr>
+
+    <tr>
+
+      <td>Pizza</td>
+
+      <td>#2500</td>
+
+      <td><input type="number" value="0" min="0"></td>
+
+    </tr>
+
+    <tr>
+
+      <td>Salad</td>
+
+      <td>#500</td>
+
+      <td><input type="number" value="0" min="0"></td>
+
+    </tr>
+
+  </table>
+
+  <button onclick="calculateTotal()">Calculate Total</button>
+
+  <h2>Bill</h2>
+
+  <p>Total: #<span id="total">0</span></p>
+
+  <button onclick="printBill()">Print</button>
+
+  
+
+  <h2>Purchase History</h2>
+
+  <ul id="purchase-list"></ul>
+
+  
+
+  
+
+  <style type="text/css">
+
+  body {
+
+  font-family: sans-serif;
+
+  }
+
+  
+
+  form {
+
+  display: flex;
+
+  flex-direction: column;
+
+  margin-bottom: 20px;
+
+  }
+
+  
+
+  label {
+
+  font-weight: bold;
+
+  }
+
+  
+
+  input {
+
+  border: 1px solid #ccc;
+
+  border-radius: 4px;
+
+  padding: 8px;
+
+  margin-bottom: 10px;
+
+  }
+
+  
+
+  table {
+
+  border-collapse: collapse;
+
+  width: 100%;
+
+  }
+
+  
+
+  th, td {
+
+  border: 1px solid #ccc;
+
+  padding: 8px;
+
+  text-align: left;
+
+  }
+
+  
+
+  th {
+
+  background-color: #ddd;
+
+  }
+
+  
+
+  button {
+
+  border: none;
+
+  border-radius: 4px;
+
+  padding: 8px 12px;
+
+  background-color: #4CAF50;
+
+  color: white;
+
+  cursor: pointer;
+
+  margin-right: 10px;
+
+  }
+
+  
+
+  button:hover {
+
+  background-color: #45a049;
+
+  }
+
+  @media only screen and (max-width: 960px) {
+
+  /* CSS styles for mobile devices */
+
+  body {
+
+  font-size: 14px;
+
+  }
+
+  .menu {
+
+  display: none;
+
+  }
+
+  }
+
+  
+
+  @media only screen and (min-width: 961px) {
+
+  /* CSS styles for desktop devices */
+
+  body {
+
+  font-size: 16px;
+
+  }
+
+  .menu {
+
+  display: block;
+
+  }
+
+  }
+
+  
+
+  
+
+  </style>
+
+<script type="text/javascript">
+
+function calculateTotal() {
+
+  // Get menu item prices and quantities
+
+  const prices = Array.from(document.querySelectorAll('#menu td:nth-child(2)')).map(x => x.textContent.slice(1));
+
+  const quantities = Array.from(document.querySelectorAll('#menu td:nth-child(3) input')).map(x => x.value);
+
+  // Calculate total
+
+  const total = prices.reduce((acc, cur, i) => acc + cur * quantities[i], 0);
+
+  // Update total in the app
+
+  document.querySelector('#total').textContent = total;
+
+  // Get menu items and quantities
+
+  const menu = Array.from(document.querySelectorAll('#menu tr:not(:first-child)')).map(x => {
+
+    const item = x.querySelector('td:first-child').textContent;
+
+    const quantity = x.querySelector('td:nth-child(3) input').value;
+
+    return `${item} x ${quantity}`;
+
+  });
+
+  // Get customer name and table number
+
+  const customerName = document.querySelector('#customer-name').value;
+
+  const tableNumber = document.querySelector('#table-number').value;
+
+  // Get the current date and time
+
+  const date = new Date();
+
+  
+
+  // Add purchase to local storage
+
+  const purchases = JSON.parse(localStorage.getItem('purchases')) || [];
+
+  purchases.push({ customerName, tableNumber, menu, total,date });
+
+  localStorage.setItem('purchases', JSON.stringify(purchases));
+
+  // Display purchase list
+
+  const purchaseList = document.querySelector('#purchase-list');
+
+  purchaseList.innerHTML = '';
+
+  purchases.forEach(purchase => {
+
+    const li = document.createElement('li');
+
+    li.textContent = `${purchase.customerName} (Table ${purchase.tableNumber}): ${purchase.menu.join(', ')} - #${purchase.total}- ${date}`;
+
+    purchaseList.appendChild(li);
+
+  });
+
+}
+
+// Load purchaseslist from local storage
+
+const loadpurchaseList = () => {
+
+const purchaseListJSON = localStorage.getItem('purchaseList');
+
+if (purchaseListJSON !== null) {
+
+purchaseList = JSON.parse(purchaseListJSON);
+
+}
+
+};
+
+function printBill() {
+
+  // Get customer name and table number
+
+  const customerName = document.querySelector('#customer-name').value;
+
+  const tableNumber = document.querySelector('#table-number').value;
+
+  // Get menu items and quantities
+
+  const menu = Array.from(document.querySelectorAll('#menu tr:not(:first-child)')).map(x => {
+
+    const item = x.querySelector('td:first-child').textContent;
+
+    const quantity = x.querySelector('td:nth-child(3) input').value;
+
+    return `${item} x ${quantity}`;
+
+  });
+
+  // Get total
+
+  const total = document.querySelector('#total').textContent;
+
+  
+
+  
+
+  // Print bill
+
+  window.print();
+
+}
+
+</script>
+
+</body>
+
+</html>
+
